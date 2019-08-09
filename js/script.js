@@ -2,49 +2,73 @@
 Treehouse Techdegree:
 FSJS project 2 - List Filter and Pagination
 ******************************************/
-   
-// Study guide for this project - https://drive.google.com/file/d/1OD1diUsTMdpfMDv677TfL1xO2CEkykSz/view?usp=sharing
 
+// Students list items
+const studentList = document.querySelectorAll('.student-item');
+const MAX_STUDENTS_PER_PAGE = 10;
 
-/*** 
-   Add your global variables that store the DOM elements you will 
-   need to reference and/or manipulate. 
-   
-   But be mindful of which variables should be global and which 
-   should be locally scoped to one of the two main functions you're 
-   going to create. A good general rule of thumb is if the variable 
-   will only be used inside of a function, then it can be locally 
-   scoped to that function.
+/***
+  Function to display the list items for a given page number.
 ***/
+const showPage = (list, page) => {
+  const startIndex = page * MAX_STUDENTS_PER_PAGE - MAX_STUDENTS_PER_PAGE;
+  const endIndex = page * MAX_STUDENTS_PER_PAGE;
 
+  for(let i = 0; i < list.length; i++) {
+    if (i >= startIndex && i < endIndex) {
+      list[i].style.display = 'block';
+    } else {
+      list[i].style.display = 'none';
+    }
+  }
+}
 
-
-
-/*** 
-   Create the `showPage` function to hide all of the items in the 
-   list except for the ten you want to show.
-
-   Pro Tips: 
-     - Keep in mind that with a list of 54 students, the last page 
-       will only display four.
-     - Remember that the first student has an index of 0.
-     - Remember that a function `parameter` goes in the parens when 
-       you initially define the function, and it acts as a variable 
-       or a placeholder to represent the actual function `argument` 
-       that will be passed into the parens later when you call or 
-       "invoke" the function 
+/***
+  Function to generate, append, and add functionality to the pagination buttons.
 ***/
+const appendPageLinks = (list) => {
+  const maxPages = Math.ceil(studentList.length / MAX_STUDENTS_PER_PAGE);
 
+  // create pagination section
+  const paginationContainer = document.createElement('div');
+  paginationContainer.className = 'pagination';
+  const paginationList = document.createElement('ul');
+  paginationContainer.appendChild(paginationList);
 
+  // create list item and add to pagination section for all pages.
+  for (let i = 1; i <= maxPages; i++) {
+    const listItem = document.createElement('li');
 
+    // Create anchor tag and set href and textContent attribute.
+    const anchorLink = document.createElement('a');
+    anchorLink.setAttribute('href', '#');
+    anchorLink.textContent = i;
+    if (i === 1) {
+      anchorLink.className = 'active';
+    }
+    listItem.appendChild(anchorLink);
+    paginationList.appendChild(listItem);
+  }
 
-/*** 
-   Create the `appendPageLinks function` to generate, append, and add 
-   functionality to the pagination buttons.
-***/
+  const pageContainer = document.querySelector('.page');
+  pageContainer.appendChild(paginationContainer);
 
+  // Add functionality to pagination links.
+  const paginationLinks = document.querySelectorAll('.pagination a');
+  for (let i = 0; i < paginationLinks.length; i++) {
+    paginationLinks[i].addEventListener('click', (event) => {
+      // Show the clicked page.
+      const pageNumber = event.target.textContent;
+      showPage(studentList, pageNumber);
+      // Remove 'active' class from all pagination links.
+      paginationLinks.forEach((link) => {
+        link.className = '';
+      })
+      // Set classname as 'active' to the clicked pagination link.
+      event.target.className = 'active';
+    });
+  }
+}
 
-
-
-
-// Remember to delete the comments that came with this file, and replace them with your own code comments.
+showPage(studentList, 1);
+appendPageLinks(studentList);
